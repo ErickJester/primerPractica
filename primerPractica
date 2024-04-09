@@ -43,7 +43,7 @@ void leer_cadena_valida(char *cadena, char *alfabeto, char *mensaje) {
         valida = 1;
         for (int i = 0; cadena[i] && valida; i++) {
             if (!strchr(alfabeto, cadena[i])) {
-                printf("Entrada inválida. La cadena contiene caracteres que no están en el alfabeto.\n");
+                printf("Entrada invalida. La cadena contiene caracteres que no estan en el alfabeto.\n");
                 valida = 0;
             }
         }
@@ -105,7 +105,7 @@ int main() {
     scanf(" %c", &metodo);
 
     if (metodo == 'r') {
-        printf("Introduce el carácter inicial y final del rango: ");
+        printf("Introduce el caracter inicial y final del rango: ");
         scanf(" %c %c", &inicio, &fin);
         for (char c = inicio; c <= fin; c++) {
             alfabeto[c - inicio] = c;
@@ -127,14 +127,14 @@ int main() {
     printf("w1 %s es una subcadena de w2\n", es_subcadena(w1, w2) ? "" : "no");
     printf("w1 %s es una subsecuencia de w2\n", es_subsecuencia(w1, w2) ? "" : "no");
 
-    printf("¿Deseas generar los lenguajes L1 y L2? (1 para sí, otro para no): ");
+    printf("¿Deseas generar los lenguajes L1 y L2? (1 para si, otro para no): ");
     scanf("%d", &opcion);
     if (opcion == 1) {
-        printf("Introduce el número de palabras (np) y la longitud de las palabras (l): ");
+        printf("Introduce el numero de palabras (np) y la longitud de las palabras (l): ");
         scanf("%d %d", &np, &l);
         generar_lenguajes(alfabeto, np, l);
         generar_diferencia(np);
     }
-    printf("Primer commit");
+    printf("Primer commit ");
     return 0;
 }
