@@ -52,28 +52,6 @@ void leer_cadena_valida(char *cadena, char *alfabeto, char *mensaje) {
     } while (!valida);
 }
 
-void generar_lenguajes(char *alfabeto, int np, int l) {
-    int alfabeto_len = strlen(alfabeto);
-    printf("Lenguaje L1:\n");
-    for (int i = 0; i < np; i++) {
-        for (int j = 0; j < l; j++) {
-            int rand_idx = rand() % alfabeto_len;
-            l1[i][j] = alfabeto[rand_idx];
-            l1[i][j+1] = '\0';
-        }
-        printf("%s\n", l1[i]);
-    }
-    printf("Lenguaje L2:\n");
-    for (int i = 0; i < np; i++) {
-        for (int j = 0; j < l; j++) {
-            int rand_idx = rand() % alfabeto_len;
-            l2[i][j] = alfabeto[rand_idx];
-            l2[i][j+1] = '\0';
-        }
-        printf("%s\n", l2[i]);
-    }
-}
-
 void imprimir_cadenas_de_longitud(char *str, int idx, int n) {
     if (idx == n) {
         printf("%s\n", str);
@@ -90,9 +68,9 @@ void calcular_potencia(int n) {
     if (n > 0) {
         imprimir_cadenas_de_longitud(str, 0, n);
     } else if (n == 0) {
-        printf("Cadena vacía\n");
+        printf("Cadena vacia\n");
     } else {
-        printf("Conjunto vacío\n");
+        printf("Conjunto vacio\n");
     }
 }
 
@@ -100,15 +78,13 @@ void verificar_regex(char *cadena, char *patron) {
     regex_t regex;
     int resultado;
     char msgbuf[100];
-
-    // Compila la expresión regular
+    
     resultado = regcomp(&regex, patron, REG_EXTENDED);
     if (resultado) {
-        fprintf(stderr, "No se pudo compilar la expresión regular\n");
+        fprintf(stderr, "No se pudo compilar la expresion regular\n");
         exit(1);
     }
 
-    // Ejecuta la expresión regular
     resultado = regexec(&regex, cadena, 0, NULL, 0);
     if (!resultado) {
         printf("Palabra correcta\n");
@@ -119,8 +95,53 @@ void verificar_regex(char *cadena, char *patron) {
         fprintf(stderr, "Error al evaluar regex: %s\n", msgbuf);
     }
 
-    // Libera la memoria asignada a la expresión regular
     regfree(&regex);
+}
+void generar_lenguajes(char *alfabeto, int np, int l) {
+    int alfabeto_len = strlen(alfabeto);
+    srand(time(NULL));  // consider moving srand to main if not already there
+    printf("Lenguaje L1: \n");
+    for (int i = 0; i < np; i++) {
+        for (int j = 0; j < l; j++) {
+            l1[i][j] = alfabeto[rand() % alfabeto_len];
+        }
+        l1[i][l] = '\0';
+        printf("%s\n", l1[i]);
+    }
+    
+    printf("Lenguaje L2:\n");
+    for (int i = 0; i < np; i++) {
+        for (int j = 0; j < l; j++) {
+            l2[i][j] = alfabeto[rand() % alfabeto_len];
+        }
+        l2[i][l] = '\0';
+        printf("%s\n", l2[i]);
+    }
+}
+void generar_diferencia_lenguajes(int np) {
+    int ld_count = 0;
+    int found;
+
+    printf("Calculando diferencia L1 - L2:\n");
+    for (int i = 0; i < np; i++) {
+        found = 0;
+        for (int j = 0; j < np; j++) {
+            if (strcmp(l1[i], l2[j]) == 0) {
+                found = 1;
+                printf("Coincidencia eliminada: %s\n", l1[i]);
+                break;
+            }
+        }
+        if (!found) {
+            strcpy(ld[ld_count], l1[i]);
+            ld_count++;
+        }
+    }
+
+    printf("Lenguaje LD (L1 - L2):\n");
+    for (int i = 0; i < ld_count; i++) {
+        printf("%s\n", ld[i]);
+    }
 }
 int main() {
     char w1[MAX_CADENA], w2[MAX_CADENA], entrada[MAX_CADENA];
@@ -128,7 +149,8 @@ int main() {
     int opcion, np, l, potencia;
 
     srand(time(NULL)); 
-
+    
+    run:
     printf("Introduce tu alfabeto (i para individual, r para rango): ");
     char metodo;
     scanf(" %c", &metodo);
@@ -148,16 +170,21 @@ int main() {
             }
         }
     }
-
+    if(alfabeto_len < 3) {
+        printf("Error: El alfabeto debe tener al menos 3 simbolos.");
+        goto run;
+    }
+    /*
     leer_cadena_valida(w1, alfabeto, "Introduce la cadena w1: ");
     leer_cadena_valida(w2, alfabeto, "Introduce la cadena w2: ");
+    */
 
     do {
         printf("\nElige una opción:\n");
         printf("1. Prefijos y sufijos\n");
         printf("2. Generar los lenguajes L1 y L2\n");
         printf("3. Calcular la potencia del alfabeto\n");
-        printf("4. Verificar cadenas con todas las vocales en orden. ");
+        printf("4. Verificar cadenas con todas las vocales en orden. \n");
         printf("0. Salir\n");
         scanf("%d", &opcion);
 
@@ -174,6 +201,7 @@ int main() {
                 printf("Introduce el numero de palabras (np) y la longitud de las palabras (l): ");
                 scanf("%d %d", &np, &l);
                 generar_lenguajes(alfabeto, np, l);
+                generar_diferencia_lenguajes(np);
                 break;
             case 3:
             printf("\n\n");
@@ -197,7 +225,7 @@ int main() {
                 printf("Saliendo del programa...\n");
                 break;
             default:
-                printf("Opción no válida. Por favor, elige una opción válida.\n");
+                printf("Opción no valida. Por favor, elige una opcion valida.\n");
         }
     } while (opcion != 0);
 
