@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
+#include <regex.h>
 
 #define MAX_ALFABETO 256
 #define MAX_CADENA 100
@@ -95,8 +96,34 @@ void calcular_potencia(int n) {
     }
 }
 
+void verificar_regex(char *cadena, char *patron) {
+    regex_t regex;
+    int resultado;
+    char msgbuf[100];
+
+    // Compila la expresión regular
+    resultado = regcomp(&regex, patron, REG_EXTENDED);
+    if (resultado) {
+        fprintf(stderr, "No se pudo compilar la expresión regular\n");
+        exit(1);
+    }
+
+    // Ejecuta la expresión regular
+    resultado = regexec(&regex, cadena, 0, NULL, 0);
+    if (!resultado) {
+        printf("Palabra correcta\n");
+    } else if (resultado == REG_NOMATCH) {
+        printf("Palabra incorrecta\n");
+    } else {
+        regerror(resultado, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Error al evaluar regex: %s\n", msgbuf);
+    }
+
+    // Libera la memoria asignada a la expresión regular
+    regfree(&regex);
+}
 int main() {
-    char w1[MAX_CADENA], w2[MAX_CADENA];
+    char w1[MAX_CADENA], w2[MAX_CADENA], entrada[MAX_CADENA];
     char inicio, fin;
     int opcion, np, l, potencia;
 
@@ -130,6 +157,7 @@ int main() {
         printf("1. Prefijos y sufijos\n");
         printf("2. Generar los lenguajes L1 y L2\n");
         printf("3. Calcular la potencia del alfabeto\n");
+        printf("4. Verificar cadenas con todas las vocales en orden. ");
         printf("0. Salir\n");
         scanf("%d", &opcion);
 
@@ -157,6 +185,12 @@ int main() {
                 } else {
                     printf("La potencia debe estar en el rango de -5 a 5.\n");
                 }
+                break;
+            case 4:
+            printf("\n\n");
+                printf("Introduce una cadena para verificar (a-z con todas las vocales en orden): ");
+                scanf("%s", entrada);
+                verificar_regex(entrada, ".*a.*e.*i.*o.*u.*");
                 break;
             case 0:
             printf("\n\n");
